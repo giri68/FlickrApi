@@ -26,6 +26,21 @@ function handleSearch() {
     $(".js-more-results").addClass("block");
   });
 }
+
+function handleAutoSearch() {
+  $(".js-form").on("keyup change", function(event) {
+    event.preventDefault();
+    STORE.searchResults = [];
+    $(".js-search-results").html("");
+    let search = $(".js-input").val();
+    STORE.userSearchTerm = `${search} wallpaper`;
+    $(".form").addClass("form-shift");
+    getDataFromApi(STORE.userSearchTerm, displayData);
+    $(".js-more-results").removeClass("hidden");
+    $(".js-more-results").addClass("block");
+  });
+}
+
 function handleMoreResults() {
   $(".js-more-results").on("click", function(event) {
     getDataFromApi(STORE.userSearchTerm, displayData);
@@ -40,8 +55,12 @@ function handleImageClick() {
     $(".js-selected-image").attr("src", imgUrl);
     const id = $(event.currentTarget).parent().find("img").attr("data-id");
     const secret = $(event.currentTarget).parent().find("img").attr("data-secret");
-    getInfoFromApi(id, secret, displayInfo);
-    getSizeFromApi(id, displaySize);
+    getInfoFromApi(id, secret, (response) => {
+      displayInfo(response);
+      getSizeFromApi(id, (response) => {
+        displaySize(response);
+      });
+    });
     // $(".selected-image").find("h4").append(`Download Wallpaper: ${imgUrl}`);
 });
 }
@@ -60,8 +79,9 @@ function getDataFromApi(searchTerm, callback) {
     text: searchTerm,
     format: 'json',
     nojsoncallback: 1,
-    per_page: 10,
-    page: STORE.onPage
+    per_page: 9,
+    page: STORE.onPage,
+    safe_search: 1
   };
   $.getJSON(STORE.api_url, request, callback); 
 }
@@ -135,6 +155,7 @@ function eventHandlers() {
   handleMoreResults();
   handleImageClick();
   handleRemoveLightbox();
+  handleAutoSearch();
 }
 
 $(eventHandlers);
