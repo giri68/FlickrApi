@@ -70,6 +70,12 @@ function handleRemoveLightbox() {
     $(".js-selected-image").attr("src", "");
     pageRender();
   });
+  $(document).keydown(function(event) {
+    if (event.keyCode == 27) {
+      $(".js-selected-image").attr("src", "");
+      pageRender();
+    }
+  });
 }
 
 function getDataFromApi(searchTerm, callback) {
@@ -125,7 +131,7 @@ function displayInfo(response) {
 
 function displaySize(response) {
   $(".description").find(".download").html(`
-  <a href="${response.sizes.size[response.sizes.size.length-1].source}">Download Here</a>`);
+  <a href="${response.sizes.size[response.sizes.size.length-1].source}" target="_blank">Download Here</a>`);
 }
 
 // function renderToHtml() {
